@@ -1,19 +1,19 @@
-﻿# disk
+# disk
 
-Scripts para diagnÃ³stico y testing de discos fÃ­sicos.
+Scripts for diagnosis and testing of physical disks.
 
 ## Scripts
 
 ### `health_disk.sh`
-DiagnÃ³stico completo de todos los discos del sistema:
-- Formateo y particionado previo al testeo
-- Test de escritura, lectura y latencia con `dd`
-- Chequeo de atributos SMART crÃ­ticos (IDs 5, 187, 188, 196, 197, 198)
-- Genera logs en `./logs/` para revisiÃ³n posterior
-- Output coloreado para lectura rÃ¡pida
+Complete diagnosis of all disks in the system:
 
-**Uso:**
+- Formatting and partitioning before testing
+- Write, read, and latency tests using `dd`
+- Check of critical SMART attributes (IDs 5, 187, 188, 196, 197, 198)
+- Generates logs in `./logs/` for later review
+- Color-coded output for quick reading
+
+**Usage:**
 ```bash
 chmod +x health_disk.sh
 sudo ./health_disk.sh
-```
