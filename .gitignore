@@ -1,0 +1,12 @@
+﻿# Logs
+*.log
+logs/
+
+# Archivos temporales
+*.tmp
+*.bak
+
+# Archivos con datos sensibles â€” nunca subir
+*_ips.txt
+*_passwords*
+authorized_keys*

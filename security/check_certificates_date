@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+#
+# check_certificates_date
+#
+# Verifica las fechas de vencimiento de certificados SSL configurados
+# en Apache (httpd) y Nginx. Detecta certificados ya vencidos y
+# certificados próximos a vencer en las próximas 72 horas.
+#
+# Uso:
+#   ./check_certificates_date          # Output completo
+#   ./check_certificates_date -q       # Solo resumen (sin detalle por certificado)
+#   ./check_certificates_date --quiet  # Igual que -q
+#
+# Exit codes:
+#   0 — Todos los certificados OK
+#   1 — WARNING: al menos un certificado vence en menos de 72 hs
+#   2 — ERROR:   al menos un certificado ya está vencido
+#
+# Rutas revisadas:
+#   Apache:  /opt/apache/ y /etc/httpd/
+#   Nginx:   /etc/nginx/
+#
+# Dependencias: openssl, bash 4+
+#
+
+certificates_apache=''
+certificates_nginx=''
+certificate_error=0
+certificate_warn=0
+
+ret_val=0
+
+quiet=false
+if [ "$1" = "-q" ] || [ "$1" = "--quiet" ] ; then
+    quiet=true
+fi
+
+if [ -d "/opt/apache" ] ; then
+    certificates_apache_opt="$(grep -s -r -w 'SSLCertificateFile' /opt/apache/{conf.d/,conf/httpd.conf,vhosts/,conf/vhosts/} | grep -v '#' | grep -v '/localhost.crt' | awk {'print $NF'} | sort -u)"
+fi
+
+if [ -d "/etc/httpd" ] ; then
+    certificates_apache="$(grep -s -r -w 'SSLCertificateFile' /etc/httpd/{conf.d/,conf/httpd.conf,vhosts/,conf/vhosts/} | grep -v '#' | grep -v '/localhost.crt' | awk {'print $NF'} | sort -u)"
+fi
+
+if [ -d "/etc/nginx" ] ; then
+    certificates_nginx="$(grep -s -r -w 'ssl_certificate' /etc/nginx/ | grep -v '#' | awk {'print $NF'} | cut -d';' -f1 | sort -u)"
+fi
+
+for certificate in ${certificates_apache_opt} ${certificates_apache} ${certificates_nginx} ; do
+    if [ -f "${certificate}" ] ; then
+        not_valid_after="$(openssl x509 -in ${certificate} -text -noout | grep 'Not After' | cut -d':' -f2-)"
+        not_valid_after_timestamp=$(date -d "${not_valid_after}" +%s)
+
+        if [ ${not_valid_after_timestamp} -le $(date +%s) ] ; then
+            ${quiet} || echo "ERROR: SSL vencido ${certificate} -> ${not_valid_after}"
+            certificate_error=$((certificate_error+1))
+        elif [ ${not_valid_after_timestamp} -lt $(date +%s -d "+3 days") ] ; then
+            ${quiet} || echo "WARNING: SSL proximo a vencer $certificate -> ${not_valid_after}"
+            certificate_warn=$((certificate_warn+1))
+        fi
+    fi
+done
+
+if [ ${certificate_warn} -ne 0 ] ; then
+    echo "WARNING: ${certificate_warn} certificados por vencer en 72 hs"
+    ret_val=1
+fi
+
+if [ ${certificate_error} -ne 0 ] ; then
+    echo "ERROR: ${certificate_error} certificados ya vencidos"
+    ret_val=2
+fi
+
+exit ${ret_val}
