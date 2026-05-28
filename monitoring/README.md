@@ -1,16 +1,17 @@
-﻿# monitoring
+# monitoring
 
-Scripts de monitoreo y detecciÃ³n de ataques en tiempo real.
+Scripts for real-time monitoring and attack detection.
 
 ## Scripts
 
 ### `top_connections_cron.sh`
-AnÃ¡lisis de logs Apache para detecciÃ³n automÃ¡tica de ataques:
-- IPs con mÃ¡s de 100 conexiones en el Ãºltimo minuto
-- IPs con mÃ¡s de 6000 conexiones en la hora actual
-- DetecciÃ³n de ataques a wp-login.php (por IP y por dominio)
-- DetecciÃ³n de abuso de xmlrpc.php
-- Soporte GeoIP (mmdblookup) y detecciÃ³n de rangos Cloudflare
-- Modo TEST para simular sin bloquear
+Apache log analysis for automatic attack detection:
 
-DiseÃ±ado para ejecutarse vÃ­a cron cada minuto.
+- IPs with more than 100 connections in the last minute
+- IPs with more than 6000 connections in the current hour
+- Detection of attacks on `wp-login.php` (by IP and by domain)
+- Detection of `xmlrpc.php` abuse
+- GeoIP support (`mmdblookup`) and Cloudflare range detection
+- TEST mode to simulate without blocking
+
+Designed to run via cron every minute.
