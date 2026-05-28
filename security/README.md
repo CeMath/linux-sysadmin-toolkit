@@ -1,28 +1,23 @@
-﻿# security
+# security
 
-Scripts de seguridad: hardening de servidores, monitoreo de certificados SSL y firewall.
+Security scripts: server hardening, SSL certificate monitoring, and firewall management.
 
 ## Scripts
 
 ### `server_hardening.sh`
-Hardening de servidor Linux:
-- AuditorÃ­a de lastlog y crontabs activos
-- Limpieza de malware kinsing
-- Bloqueo de cron para usuarios de servicios web (www-data, apache, postgres)
-- RestricciÃ³n de wget/curl via ACL por usuario
-- Reglas iptables de salida por UID
+Linux server hardening:
+
+- Audit of lastlog and active crontabs
+- Kinsing malware cleanup
+- Blocking cron for web service users (`www-data`, `apache`, `postgres`)
+- Restriction of `wget`/`curl` via ACL per user
+- Outbound iptables rules by UID
 
 ### `check_certificates_date`
-Verifica fechas de vencimiento de certificados SSL en Apache y Nginx.
-Soporta flag `-q` para uso en scripts o cron.
+Checks expiration dates of SSL certificates in Apache and Nginx.  
+Supports `-q` flag for use in scripts or cron.
 
-**Uso:**
+**Usage:**
 ```bash
-./check_certificates_date        # Output completo
-./check_certificates_date -q     # Solo errores/warnings
-```
-
-**Exit codes:** 0 = OK, 1 = WARNING (vence en 72hs), 2 = ERROR (ya vencido)
-
-### `iptables_template.sh`
-Template de reglas iptables bÃ¡sico. Configurar las variables al inicio del archivo.
+./check_certificates_date        # Full output
+./check_certificates_date -q     # Only errors/warnings
